@@ -1,11 +1,13 @@
 ## Estimation and Figures for Indirect Standardization of COVID19 deaths by age and place
 library(data.table)
-source("../standardization_functions.R")
+source("./standardization_functions.R")
+
+produce_figures = TRUE
 
 #################################################
 ## Get exposure information from census (Nijk) ##
 #################################################
-Nijk.dt <- fread("./data/Nijk.csv")
+Nijk.dt <- fread("../data/Nijk.csv")
 Nijk = reconstruct_Nijk(Nijk.dt)
 
 
@@ -14,7 +16,7 @@ Nijk = reconstruct_Nijk(Nijk.dt)
 ##################################################################
 
 ## Deaths by age (Di)
-Di.df = read.csv("./data/deaths_by_age_Di.csv", header = T, comment.char = "#")
+Di.df = read.csv("../data/deaths_by_age_Di.csv", header = T, comment.char = "#")
 Di = Di.df$nDx
 ## also get age grouping (this is CDC 0, 5, 15, 25, ..., 85+)
 x_cdc = Di.df$x
@@ -23,14 +25,14 @@ x_cdc = Di.df$x
 
 
 ## Deaths by county (Dj)
-cdc_county_filename = "~/Downloads/Provisional_COVID-19_Death_Counts_in_the_United_States_by_County (5).csv"
+cdc_county_filename = "../data/Provisional_COVID-19_Death_Counts_in_the_United_States_by_County (5).csv"
 Dj = get_Dj(state_name = state.name, cdc_county_filename) ## state.name is all 50 states, but not DC
 
 
 
 
 ## Deaths by race for states and nation (DJk)
-perc_DJk = fread("./data/clean_cdc_race_may_13.csv")
+perc_DJk = fread("../data/clean_cdc_race_may_13.csv")
 
 ########################
 ## National estimates ##
@@ -65,7 +67,7 @@ Mj = Dj/Nj_my_counties
 
 
 ## Dk for nation
-cleaned_cdc_race_filename = "./data/clean_cdc_race_may_13.csv"
+cleaned_cdc_race_filename = "../data/clean_cdc_race_may_13.csv"
 perc_Dk_usa = get_perc_Dk(cleaned_cdc_race_filename, place.name = "United States")
 ## ok function works, and it now uses updated file
 ## scale percentages by sum of county deaths
@@ -92,18 +94,17 @@ R_k_ij = get_R_k_ij(M_i = Mi, D_j = Dj, my_Nijk = my_Nijk, D_k = Dk)
 
 ## get list of states that have enough data to do standardization
 states_with_race_reports.dt <- fread(cleaned_cdc_race_filename)
-tt <- table(states_with_race_reports$State)
+tt <- table(states_with_race_reports.dt$State)
 my_state_names = names(tt)
 
 
-cleaned_cdc_race_filename = "./data/clean_cdc_race_may_13.csv"
+
 get_standardization_by_state_fun <- function(state_name, place.name = state_name,
                                              Mj,
                                              Mi,
                                              Dj,
                                              my_Nijk,
                                              cleaned_cdc_race_filename)
-
 {
     ## state_name = "Michigan"
     ## place.name = state_name
@@ -156,7 +157,7 @@ get_standardization_by_state_fun <- function(state_name, place.name = state_name
 }
 
 
-
+cleaned_cdc_race_filename = "../data/clean_cdc_race_may_13.csv"
 
 tmp = get_standardization_by_state_fun(state_name = "California",
                                   Mj = Mj,
@@ -187,6 +188,8 @@ for (i in 1:length(my_state_names))
 ###################
 
 ## try with CI
+if(produce_figures)
+    pdf("../figures/state.pdf", height = 10, width = 8)
 par(mfrow = c(2,1))
 black_R_k_ij.vec <- state_results_array["R_k_ij", "b",]
 se.vec <- state_results_array["se", "b",]
@@ -223,7 +226,11 @@ points(x = hisp_R_k_ij.vec[o],
 abline(v = 1)
 abline(v = .7, lty = 2)
 title("(b) Hispanic")
-
+if(produce_figures)
+{
+    dev.off()
+    system("open ../figures/state.pdf")
+}
 
 #####################
 ## National figure #
@@ -233,7 +240,8 @@ result.mat <- round(rbind("Crude Rates" = R_k, "Place-standardized" =  R_k_j, "A
                  "Age-and-place\n standardized" = R_k_ij),2)
 colnames(result.mat) = c("White", "Black", "Asian", "i", "Hispanic", "o")
 my_result.mat <- t(result.mat[, c("Asian", "Hispanic", "Black")])
-## pdf("usa_all.pdf", width = 12, height = 9)
+if(produce_figures)
+    pdf("../figures/usa_all.pdf", width = 12, height = 9)
 par(mfrow = c(1,1))
 dotchart(my_result.mat,
          color = c("black", "red", "blue"),
@@ -249,8 +257,10 @@ segments(x0 = 1, x1 = A,
          y0 = y_val,
          col = c("black", "red", "blue"))
 title("Covid-19 mortality relative to Whites", cex.main = 2)
-## dev.off()
-##system("open usa_all.pdf")
+if(produce_figures)
+{    dev.off()
+    system("open ../figures/usa_all.pdf")
+}
 
 
 

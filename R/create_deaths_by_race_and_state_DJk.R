@@ -30,7 +30,7 @@ clean_cdc_race_file <- function(cdc_race_filename)
     return(dt_race)
 }
 
-cdc_race_filename = "~/Downloads/Provisional_Death_Counts_for_Coronavirus_Disease__COVID-19___Weekly_State-Specific_Data_Updates (8).csv"
+cdc_race_filename = "../data/Provisional_Death_Counts_for_Coronavirus_Disease__COVID-19___Weekly_State-Specific_Data_Updates (8).csv"
 foo = clean_cdc_race_file(cdc_race_filename)
 
 clean_cdc_race.dt = foo[Indicator == "covid_death_perc"]
@@ -40,8 +40,8 @@ ny_weights = c("NYC" = .44, "NYS" = .56)
 ny_row = data.table(Indicator = "covid_death_perc",
            State = "New York",
            ny_weights["NYC"] * clean_cdc_race.dt[State == "New York City", .(w,b,a,i,h,o)] +
-           ny_weights["NYS"] *clean_cdc_race.dt[State == "New York State", .(w,b,a,i,h,o)])
+           ny_weights["NYS"] * clean_cdc_race.dt[State == "New York State", .(w,b,a,i,h,o)])
 clean_cdc_race_ny.dt = rbind(clean_cdc_race.dt, ny_row)
 clean_cdc_race_ny.dt[grepl("New York", State)]
 clean_cdc_race_out.dt = clean_cdc_race_ny.dt[ !(State %in% c("New York City", "New York State"))][order(State)]
-fwrite(clean_cdc_race_out.dt, "./data/clean_cdc_race_may_13.csv")
+fwrite(clean_cdc_race_out.dt, "../data/clean_cdc_race_may_13.csv")
