@@ -318,6 +318,10 @@ get_R_k_i = function(M_i, my_Nijk, D_k)
 
 get_R_k_j = function(M_j, my_Nijk, D_k)
 {
+     ## make sure j indices match
+     my_counties = dimnames(my_Nijk)[[2]]
+     M_j = M_j[my_counties]
+
     my_Njk = apply(my_Nijk, c(2,3), sum)
     stan_D_k_j = rbind(M_j) %*% my_Njk
     stan_D_k_j = stan_D_k_j[1,] ## turn to vector
@@ -329,9 +333,13 @@ get_R_k_j = function(M_j, my_Nijk, D_k)
 }
 
 
-
-get_R_k_ij = function(M_i, D_j, my_Nijk, D_k)
+get_R_k_ij =
+function(M_i, D_j, my_Nijk, D_k)
 {
+
+     ## make sure j indices match
+     my_counties = dimnames(my_Nijk)[[2]]
+     D_j = D_j[my_counties]
 
     ## M_i = Mi
     ## D_j = Dj
@@ -362,3 +370,4 @@ SMR_k_ij = D_k / stan_D_k_ij
 R_k_ij = SMR_k_ij / SMR_k_ij["w"]
 return(R_k_ij)
 }
+

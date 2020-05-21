@@ -189,7 +189,7 @@ for (i in 1:length(my_state_names))
 
 ## try with CI
 if(produce_figures)
-    pdf("../figures/state.pdf", height = 10, width = 8)
+    pdf("../figures/state.pdf", height = 12, width = 8)
 par(mfrow = c(2,1))
 black_R_k_ij.vec <- state_results_array["R_k_ij", "b",]
 se.vec <- state_results_array["se", "b",]
@@ -252,7 +252,7 @@ abline(v =1)
 ## (there's some reversing of order and some insertion of blank lines needed here)
 A = my_result.mat[,4:1]
 y_val = seq(A) + (col(A) - 1) * 2
-text(A, y_val, A, pos = 3, col = c("black", "red", "blue"))
+text(A, y_val, sprintf("%.2f", A), pos = 3, col = c("black", "red", "blue"))
 segments(x0 = 1, x1 = A,
          y0 = y_val,
          col = c("black", "red", "blue"))
