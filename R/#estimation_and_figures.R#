@@ -252,7 +252,7 @@ abline(v =1)
 ## (there's some reversing of order and some insertion of blank lines needed here)
 A = my_result.mat[,4:1]
 y_val = seq(A) + (col(A) - 1) * 2
-text(A, y_val, sprintf("%A, pos = 3, col = c("black", "red", "blue"))
+text(A, y_val, sprintf("%.2f", A), pos = 3, col = c("black", "red", "blue"))
 segments(x0 = 1, x1 = A,
          y0 = y_val,
          col = c("black", "red", "blue"))
