@@ -1,3 +1,7 @@
+####################################################################
+## STANDARDIZATION FUNCTIONS FOR ESTIMATION OF COVID-19 MORTALITY ##
+####################################################################
+
 ## cdc_county_filename = "~/Downloads/Provisional_COVID-19_Death_Counts_in_the_United_States_by_County (1).csv"
 ## census_filename = "~/Downloads/cc-est2017-alldata.csv"
 ## cdc_race_filename = "~/Downloads/Provisional_Death_Counts_for_Coronavirus_Disease__COVID-19___Weekly_State-Specific_Data_Updates (2).csv"
