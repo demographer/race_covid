@@ -1,104 +1,104 @@
-## Estimation and Figures for Indirect Standardization of COVID19 deaths by age and place
+#############################################################################################
+## ESTIMATION AND FIGURES FOR INDIRECT STANDARDIZATION OF COVID-19 DEATHS BY AGE AND PLACE ##
+#############################################################################################
 library(data.table)
 source("./standardization_functions.R")
-
 produce_figures = TRUE
 
 #################################################
-## Get exposure information from census (Nijk) ##
+## Get exposure information from Census (Nijk) ##
 #################################################
 Nijk.dt <- fread("../data/Nijk.csv")
 Nijk = reconstruct_Nijk(Nijk.dt)
 
 
-##################################################################
-## Get marginal distributions of death by age, county, and race ##
-##################################################################
+############################################################################
+## Get marginal distributions of deaths by age, place, and race/ethnicity ##
+############################################################################
 
 ## Deaths by age (Di)
 Di.df = read.csv("../data/deaths_by_age_Di.csv", header = T, comment.char = "#")
 Di = Di.df$nDx
-## also get age grouping (this is CDC 0, 5, 15, 25, ..., 85+)
-x_cdc = Di.df$x
-
-
-
+    ## Age groupings used by the CDC (i.e., 0, 5, 15, 25, ..., 85+)
+    x_cdc = Di.df$x
 
 ## Deaths by county (Dj)
 cdc_county_filename = "../data/Provisional_COVID-19_Death_Counts_in_the_United_States_by_County (5).csv"
-Dj = get_Dj(state_name = state.name, cdc_county_filename) ## state.name is all 50 states, but not DC
+Dj = get_Dj(state_name = state.name, cdc_county_filename) ## state.name is all 50 states but not DC
 
-
-
-
-## Deaths by race for states and nation (DJk)
+## Deaths by race/ethnicity for each state or for entire nation (DJk)
+## Note: states and nation are the aggregations of counties -- i.e., they are the big J to counties' little j
 perc_DJk = fread("../data/clean_cdc_race_may_13.csv")
 
-########################
-## National estimates ##
-########################
 
-## census counts for observed counties
+#########################################
+## Prepare data for national estimates ##
+#########################################
+
+## Population estimates for counties reporting COVID-19 deaths
 my_counties = names(Dj)
 my_Nijk = Nijk[,my_counties,]
-
-print("Number of counties")
-print(length(my_counties))
-## [1] 365
-print("Share of US pop covered by these counties")
-print(sum(my_Nijk)/sum(Nijk))
-## [1] 0.6226889
-## sum(my_Nijk)
-## [1] 203626968
+    print("Number of counties")
+    print(length(my_counties))
+    ## [1] 365  ## total counties reporting COVID-19 deaths as of May 13; only 12% of 3,007 total counties in US
+    print("Share of US pop covered by these counties")
+    print(sum(my_Nijk)/sum(Nijk))
+    ## [1] 0.6226889  ## 62% of the US population lives in only 12% of its counties
+    ## sum(my_Nijk)
+    ## [1] 203626968  ## DJ = roughly 204 million
 
 ## Death rates by age (Mi)
-## Note: sum(Di) > sum(Dj) because of dropping of < 10
-## sum(Di)
-## [1] 54861
-## sum(Dj)
-## [1] 52385
+  ## note: sum(Di) > sum(Dj) because Dj excludes counties with <10 COVID-19 deaths (suppressed by CDC for confidentiality)
+    ## sum(Di)
+    ## [1] 54861
+    ## sum(Dj)
+    ## [1] 52385
 Ni_my_counties = apply(my_Nijk, 1, sum)
 Mi = Di / Ni_my_counties
 
-## Death rates by county (Mj)
+## Death rates by place (Mj) ## note: place = county
 Nj_my_counties = apply(my_Nijk, 2, sum)
 Mj = Dj/Nj_my_counties
 
-
-
-## Dk for nation
+## Death rates by race/ethnicity (Dk)
 cleaned_cdc_race_filename = "../data/clean_cdc_race_may_13.csv"
 perc_Dk_usa = get_perc_Dk(cleaned_cdc_race_filename, place.name = "United States")
-## ok function works, and it now uses updated file
-## scale percentages by sum of county deaths
+
+## Scale Dk percentages by sum of county deaths (Dj)
 Dk = perc_Dk_usa / 100 * sum(Dj)
-## reorder, using Nijk
+
+## Reorder using Nijk
 Dk = Dk[dimnames(Nijk)[[3]] ]
 
 
-########################
-## National estimates ##
-########################
+####################################################################
+## Obtain national estimates for mortality risk by race/ethnicity ##
+####################################################################
 
-## Relative risks of mortality, crude and various standardized
+## Relative risks of mortality (crude, unadjusted risk)
 R_k = get_R_k(D_k = Dk, my_Nijk = my_Nijk)
+
+## Relative risks of mortality adjusted for age [age group] only
 R_k_i = get_R_k_i(M_i = Mi, my_Nijk = my_Nijk, D_k = Dk)
+
+## Relative risks of mortality adjusted for place [county] only
 R_k_j = get_R_k_j(M_j = Mj, my_Nijk = my_Nijk, D_k = Dk)
+
+## Relative risks of mortality adjusted for both age and place 
 R_k_ij = get_R_k_ij(M_i = Mi, D_j = Dj, my_Nijk = my_Nijk, D_k = Dk)
 
 
 
-#####################
-## State estimates ##
-#####################
+############################
+## Obtain state estimates ##
+############################
 
-## get list of states that have enough data to do standardization
+## Get list of states with enough data at the county level to do standardizations
 states_with_race_reports.dt <- fread(cleaned_cdc_race_filename)
 tt <- table(states_with_race_reports.dt$State)
 my_state_names = names(tt)
 
-
-
+## Create function to obtain standardized estimates for a given state
 get_standardization_by_state_fun <- function(state_name, place.name = state_name,
                                              Mj,
                                              Mi,
@@ -115,27 +115,28 @@ get_standardization_by_state_fun <- function(state_name, place.name = state_name
     these_Nijk <- my_Nijk[, these_counties,]
     k_names = dimnames(Nijk)[[3]]
 
-    ## Dk -- for this state_name
+    ## Dk for this state_name
     print(place.name)
     this_perc_Dk = get_perc_Dk(cleaned_cdc_race_filename, place.name=place.name)
-     ## ok function works, and it now uses updated file
-     ## scale percentages by sum of county deaths
+
+    ## scale percentages by sum of county deaths
     Dk = this_perc_Dk / 100 * sum(Dj)
     Dk[is.na(Dk)] = 0
-     ## reorder, using Nijk
+    
+    ## reorder using Nijk
     Dk = Dk[dimnames(Nijk)[[3]] ]
 
     ## Mj
     these_Mj = Mj[these_counties]
+
     ## Dj
     these_Dj = Dj[these_counties]
-     ##
+
+    ## relative risks of mortality (crude and standardized)
     R_k = get_R_k(D_k = Dk, my_Nijk = these_Nijk)
     R_k_i = get_R_k_i(M_i = Mi, my_Nijk = these_Nijk, D_k = Dk)
     R_k_j = get_R_k_j(M_j = these_Mj, my_Nijk = these_Nijk, D_k = Dk)
     R_k_ij = get_R_k_ij(M_i = Mi, D_j = these_Dj, my_Nijk = these_Nijk, D_k = Dk)
-
-
 
     ## get approximate SE for R_k_ij, R_k, R_k_i
     ## SE(Rk) ~ Rk * sqrt( (1 / Dk) + (1 / Dw) )
@@ -150,23 +151,20 @@ get_standardization_by_state_fun <- function(state_name, place.name = state_name
                     R_k_j = R_k_j,
                     R_k_ij = R_k_ij,
                     se = se_R_k_ij)
-
-
+  
     out = R_k_mat
     return(out)
 }
 
-
 cleaned_cdc_race_filename = "../data/clean_cdc_race_may_13.csv"
 
+## Generate state-level estimates using the function above
 tmp = get_standardization_by_state_fun(state_name = "California",
                                   Mj = Mj,
                                   Mi = Mi,
                                   Dj = Dj,
                                   my_Nijk = my_Nijk,
                                   cleaned_cdc_race_filename = cleaned_cdc_race_filename)
-
-
 
 state_results_array <- array(NA, dim = c(nrow(tmp), ncol(tmp), length(my_state_names)))
 dimnames(state_results_array) = list(rownames(tmp), colnames(tmp), my_state_names)
@@ -183,11 +181,10 @@ for (i in 1:length(my_state_names))
 }
 
 
-###################
-## state figures ##
-###################
+###################################################################################
+## Generate figure for relative risks at state level (with confidence intervals) ##
+###################################################################################
 
-## try with CI
 if(produce_figures)
     pdf("../figures/state.pdf", height = 12, width = 8)
 par(mfrow = c(2,1))
@@ -232,11 +229,11 @@ if(produce_figures)
     system("open ../figures/state.pdf")
 }
 
-#####################
-## National figure #
-#####################
+##########################################################
+## Generate figure for relative risks at national level ##
+##########################################################
 
-result.mat <- round(rbind("Crude Rates" = R_k, "Place-standardized" =  R_k_j, "Age-standardized" = R_k_i,
+result.mat <- round(rbind("Crude rates" = R_k, "Place-standardized" =  R_k_j, "Age-standardized" = R_k_i,
                  "Age-and-place\n standardized" = R_k_ij),2)
 colnames(result.mat) = c("White", "Black", "Asian", "i", "Hispanic", "o")
 my_result.mat <- t(result.mat[, c("Asian", "Hispanic", "Black")])
@@ -261,6 +258,3 @@ if(produce_figures)
 {    dev.off()
     system("open ../figures/usa_all.pdf")
 }
-
-
-
