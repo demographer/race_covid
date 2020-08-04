@@ -16,7 +16,7 @@ Nijk = reconstruct_Nijk(Nijk.dt)
 ##################################################################
 
 ## Deaths by age (Di)
-Di.df = read.csv("../data/deaths_by_age_Di.csv", header = T, comment.char = "#")
+Di.df = read.csv("../data/deaths_by_age_Di_may_9.csv", header = T, comment.char = "#")
 Di = Di.df$nDx
 ## also get age grouping (this is CDC 0, 5, 15, 25, ..., 85+)
 x_cdc = Di.df$x
@@ -25,14 +25,14 @@ x_cdc = Di.df$x
 
 
 ## Deaths by county (Dj)
-cdc_county_filename = "../data/Provisional_COVID-19_Death_Counts_in_the_United_States_by_County (5).csv"
+cdc_county_filename = "../data/provisional_COVID-19_death_counts_by_county_may_9.csv"
 Dj = get_Dj(state_name = state.name, cdc_county_filename) ## state.name is all 50 states, but not DC
 
 
 
 
 ## Deaths by race for states and nation (DJk)
-perc_DJk = fread("../data/clean_cdc_race_may_13.csv")
+perc_DJk = fread("../data/clean_cdc_race_may_9.csv")
 
 ########################
 ## National estimates ##
@@ -67,7 +67,7 @@ Mj = Dj/Nj_my_counties
 
 
 ## Dk for nation
-cleaned_cdc_race_filename = "../data/clean_cdc_race_may_13.csv"
+cleaned_cdc_race_filename = "../data/clean_cdc_race_may_9.csv"
 perc_Dk_usa = get_perc_Dk(cleaned_cdc_race_filename, place.name = "United States")
 ## ok function works, and it now uses updated file
 ## scale percentages by sum of county deaths
@@ -157,7 +157,7 @@ get_standardization_by_state_fun <- function(state_name, place.name = state_name
 }
 
 
-cleaned_cdc_race_filename = "../data/clean_cdc_race_may_13.csv"
+cleaned_cdc_race_filename = "../data/clean_cdc_race_may_9.csv"
 
 tmp = get_standardization_by_state_fun(state_name = "California",
                                   Mj = Mj,
@@ -189,7 +189,7 @@ for (i in 1:length(my_state_names))
 
 ## try with CI
 if(produce_figures)
-    pdf("../figures/state.pdf", height = 12, width = 8)
+    pdf("../figures/state_may9.pdf", height = 12, width = 8)
 par(mfrow = c(2,1))
 black_R_k_ij.vec <- state_results_array["R_k_ij", "b",]
 se.vec <- state_results_array["se", "b",]
@@ -229,7 +229,7 @@ title("(b) Hispanic")
 if(produce_figures)
 {
     dev.off()
-    system("open ../figures/state.pdf")
+    system("open ../figures/state_may9.pdf")
 }
 
 #####################
@@ -241,7 +241,7 @@ result.mat <- round(rbind("Crude Rates" = R_k, "Place-standardized" =  R_k_j, "A
 colnames(result.mat) = c("White", "Black", "Asian", "i", "Hispanic", "o")
 my_result.mat <- t(result.mat[, c("Asian", "Hispanic", "Black")])
 if(produce_figures)
-    pdf("../figures/usa_all.pdf", width = 12, height = 9)
+    pdf("../figures/usa_all_may9.pdf", width = 12, height = 9)
 par(mfrow = c(1,1))
 dotchart(my_result.mat,
          color = c("black", "red", "blue"),
@@ -259,7 +259,7 @@ segments(x0 = 1, x1 = A,
 title("Covid-19 mortality relative to Whites", cex.main = 2)
 if(produce_figures)
 {    dev.off()
-    system("open ../figures/usa_all.pdf")
+    system("open ../figures/usa_all_may9.pdf")
 }
 
 
