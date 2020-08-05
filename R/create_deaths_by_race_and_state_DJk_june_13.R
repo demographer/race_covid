@@ -30,7 +30,7 @@ clean_cdc_race_file <- function(cdc_race_filename)
     return(dt_race)
 }
 
-cdc_race_filename = "../source_data/Provisional_Death_Counts_for_Coronavirus_Disease_Weekly_State-Specific_Data_Updates__06_17.csv"
+cdc_race_filename = "../data/Provisional_Death_Counts_for_Coronavirus_Disease_Weekly_State-Specific_Data_Updates__06_17.csv"
 foo = clean_cdc_race_file(cdc_race_filename)
 
 clean_cdc_race.dt = foo[Indicator == "covid_death_perc"]
