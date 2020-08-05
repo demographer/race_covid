@@ -1,6 +1,8 @@
-## Estimation and Figures for Indirect Standardization of COVID-19 Deaths by Age and Place
+## Estimation and figures for indirect standardization of COVID-19 deaths by age and place up to May 9
+
 library(data.table)
 source("./standardization_functions.R")
+
 produce_figures = TRUE
 
 #################################################
@@ -15,7 +17,7 @@ Nijk = reconstruct_Nijk(Nijk.dt)
 ##################################################################
 
 ## Deaths by age (Di)
-Di.df = read.csv("../data/deaths_by_age_Di.csv", header = T, comment.char = "#")
+Di.df = read.csv("../data/deaths_by_age_Di_may_9.csv", header = T, comment.char = "#")
 Di = Di.df$nDx
 ## also get age grouping (this is CDC 0, 5, 15, 25, ..., 85+)
 x_cdc = Di.df$x
@@ -194,7 +196,7 @@ black_R_k_ij.vec <- state_results_array["R_k_ij", "b",]
 se.vec <- state_results_array["se", "b",]
 black_R_k_ij.vec[black_R_k_ij.vec == 0] <- NA
 o <- order(black_R_k_ij.vec, na.last = NA)
-dotchart(black_R_k_ij.vec[o], xlim = c(0, 4), cex = .9, pch = 19)
+dotchart(black_R_k_ij.vec[o], xlim = c(0, 5), cex = .9, pch = 19)
 segments(x0 = black_R_k_ij.vec[o] - 2*se.vec[o],
          x1 = black_R_k_ij.vec[o] + 2*se.vec[o],
          y0 = seq(se.vec[o]),
@@ -212,7 +214,7 @@ hisp_R_k_ij.vec <- state_results_array["R_k_ij", "h",]
 hisp_R_k_ij.vec[hisp_R_k_ij.vec == 0] <- NA
 se.vec <- state_results_array["se", "h",]
 o <- order(hisp_R_k_ij.vec, na.last = NA)
-dotchart(hisp_R_k_ij.vec[o], xlim = c(0, 4), cex = .9, pch = 19)
+dotchart(hisp_R_k_ij.vec[o], xlim = c(0, 5), cex = .9, pch = 19)
 segments(x0 = hisp_R_k_ij.vec[o] - 2*se.vec[o],
          x1 = hisp_R_k_ij.vec[o] + 2*se.vec[o],
          y0 = seq(se.vec[o]),
@@ -235,7 +237,7 @@ if(produce_figures)
 ## National figure #
 #####################
 
-result.mat <- round(rbind("Crude Rates" = R_k, "Place-standardized" =  R_k_j, "Age-standardized" = R_k_i,
+result.mat <- round(rbind("Crude rates" = R_k, "Place-standardized" =  R_k_j, "Age-standardized" = R_k_i,
                  "Age-and-place\n standardized" = R_k_ij),2)
 colnames(result.mat) = c("White", "Black", "Asian", "i", "Hispanic", "o")
 my_result.mat <- t(result.mat[, c("Asian", "Hispanic", "Black")])
@@ -255,8 +257,22 @@ text(A, y_val, sprintf("%.2f", A), pos = 3, col = c("black", "red", "blue"))
 segments(x0 = 1, x1 = A,
          y0 = y_val,
          col = c("black", "red", "blue"))
-title("Covid-19 mortality relative to Whites", cex.main = 2)
+title("COVID-19 mortality relative to Whites", cex.main = 2)
 if(produce_figures)
 {    dev.off()
     system("open ../figures/usa_all_may9.pdf")
 }
+
+
+
+## write tables to folder
+# write.csv(Di.df, file = "../data/Di.df_may9.csv")
+# write.csv(perc_DJk, file = "../data/perc_DJk_may9.csv")
+# write.csv(states_with_race_reports.dt, file = "../data/states_may9.csv")
+# 
+# 
+
+
+
+
+
