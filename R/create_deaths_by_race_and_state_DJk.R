@@ -1,4 +1,4 @@
-## Create deaths by race and state from percentage file from CDC
+## Create deaths by race and state from "weekly_state_updates_may_9" file from CDC
 
 clean_cdc_race_file <- function(cdc_race_filename)
 {
@@ -30,7 +30,7 @@ clean_cdc_race_file <- function(cdc_race_filename)
     return(dt_race)
 }
 
-cdc_race_filename = "../data/Provisional_Death_Counts_for_Coronavirus_Disease__COVID-19___Weekly_State-Specific_Data_Updates (8).csv"
+cdc_race_filename = "../data/provisional_death_counts_for_COVID-19__weekly_state_updates_may_9.csv"
 foo = clean_cdc_race_file(cdc_race_filename)
 
 clean_cdc_race.dt = foo[Indicator == "covid_death_perc"]
@@ -44,4 +44,4 @@ ny_row = data.table(Indicator = "covid_death_perc",
 clean_cdc_race_ny.dt = rbind(clean_cdc_race.dt, ny_row)
 clean_cdc_race_ny.dt[grepl("New York", State)]
 clean_cdc_race_out.dt = clean_cdc_race_ny.dt[ !(State %in% c("New York City", "New York State"))][order(State)]
-fwrite(clean_cdc_race_out.dt, "../data/clean_cdc_race_may_13.csv")
+fwrite(clean_cdc_race_out.dt, "../data/clean_cdc_race_may_9.csv")
