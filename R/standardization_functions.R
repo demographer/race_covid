@@ -317,9 +317,9 @@ get_R_k_i = function(M_i, my_Nijk, D_k)
 
 get_R_k_j = function(M_j, my_Nijk, D_k)
 {
-     ## make sure j indices match
-     my_counties = dimnames(my_Nijk)[[2]]
-     M_j = M_j[my_counties]
+    ## make sure j indices match
+    my_counties = dimnames(my_Nijk)[[2]]
+    M_j = M_j[my_counties]
 
     my_Njk = apply(my_Nijk, c(2,3), sum)
     stan_D_k_j = rbind(M_j) %*% my_Njk
