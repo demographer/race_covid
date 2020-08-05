@@ -1,7 +1,6 @@
-## cdc_county_filename = "~/Downloads/Provisional_COVID-19_Death_Counts_in_the_United_States_by_County (1).csv"
-## census_filename = "~/Downloads/cc-est2017-alldata.csv"
-## cdc_race_filename = "~/Downloads/Provisional_Death_Counts_for_Coronavirus_Disease__COVID-19___Weekly_State-Specific_Data_Updates (2).csv"
-## cdc_age_filename = "~/Downloads/Provisional_Death_Counts_for_Coronavirus_Disease__COVID-19_ (4).csv"
+## cdc_county_filename = "~/.../provisional_COVID-19_death_counts_by_county_may_9.csv"
+## census_filename = "~/.../cc-est2018-alldata.csv"
+## cdc_race_filename = "~/.../provisional_death_counts_for_COVID-19__weekly_state_updates_may_9.csv"
 
 reconstruct_Nijk <- function(Nijk.dt)
 {
@@ -30,7 +29,7 @@ get_Nijk <- function(state_name, age_grouping = seq(0, 80, 10), census_filename)
     dt <- fread(census_filename, encoding = 'UTF-8')
     dt <- dt[YEAR == 10 & AGEGRP != 0] ## 2017
 
-    ## we want white, black, asian, indian, other, hisp
+    ## we want white, black, asian, am indian, other, hisp
     ## define other as Native Hawaiian (NA) and 2+ races (NHTOM , HTOM)
     dt[, O_MALE   :=  NA_MALE   + NHTOM_MALE   + HTOM_MALE] # other
     dt[, O_FEMALE :=  NA_FEMALE + NHTOM_FEMALE + HTOM_FEMALE]
@@ -64,7 +63,7 @@ get_Nijk <- function(state_name, age_grouping = seq(0, 80, 10), census_filename)
     dt[, TOT_POP_HAT := w + b + a + i + h + o]
     ## print(dt[, .(TOT_POP_HAT, TOT_POP)])
 
-    ## convert agegroups to x, start of age group
+    ## convert age groups to x, start of age group
     dt[AGEGRP == 1, x := 0]
     dt[AGEGRP == 2, x := 5]
     dt[AGEGRP == 3, x := 10]
@@ -94,7 +93,7 @@ get_Nijk <- function(state_name, age_grouping = seq(0, 80, 10), census_filename)
     ## create unique county code county_state
     long.dt[, county_state := paste0(CTYNAME, ", ", STNAME)]
 
-    ## create approporate age groups
+    ## create appropriate age groups
     long.dt[, x := cut(x, breaks = c(age_grouping, 199), include.lowest = T, right = FALSE)]
 
     ## fix Dona Ana County New Mexico (Spanish ~n)
@@ -370,4 +369,3 @@ SMR_k_ij = D_k / stan_D_k_ij
 R_k_ij = SMR_k_ij / SMR_k_ij["w"]
 return(R_k_ij)
 }
-

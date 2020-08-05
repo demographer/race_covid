@@ -10,7 +10,7 @@ Nijk = get_Nijk(state_name = all_states, age_grouping = x_cdc, census_filename =
 Nijk.dt <- as.data.table(Nijk)
 fwrite(Nijk.dt, "./data/Nijk.csv")
 
-## Code to reconstuct Nijk
+## Code to reconstruct Nijk
 reconstruct_Nijk = function(Nijk.dt)
 {
     ## get racehisp in canonical order
