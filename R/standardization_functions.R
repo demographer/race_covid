@@ -1,5 +1,5 @@
 ## cdc_county_filename = "~/.../provisional_COVID-19_death_counts_by_county_may_9.csv"
-## census_filename = "~/.../cc-est2018-alldata.csv"
+## census_filename = "~/.../cc-est2018-alldata.csv.zip"
 ## cdc_race_filename = "~/.../provisional_death_counts_for_COVID-19__weekly_state_updates_may_9.csv"
 
 reconstruct_Nijk <- function(Nijk.dt)
