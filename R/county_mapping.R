@@ -3,12 +3,13 @@
 
 
 library(tidyverse)
+library(readxl)
 library(urbnmapr)
 
 #load files to merge
-my_counties_may9 <- read_excel("C:/Users/Serge/Google Drive/demog/pnas/source_data/observed_counties_may_9.xlsx", skip = 1)
+my_counties_may9 <- read_excel("../data/observed_counties_may_9.xlsx", skip = 1)
 
-my_counties_june13 <- read_excel("C:/Users/Serge/Google Drive/demog/pnas/source_data/observed_counties_jun_13.xlsx", skip = 1)
+my_counties_june13 <- read_excel("../data/observed_counties_june_13.xlsx", skip = 1)
 
 
 ggplot() + 
