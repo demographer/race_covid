@@ -3,7 +3,7 @@ library(data.table)
 source("./standardization_functions.R")
 
 ## Census Bureau county-level estimates
-census_filename = "~/Downloads/cc-est2018-alldata.csv.zip"
+census_filename = "~/Downloads/cc-est2018-alldata.csv"
 x_cdc = c(0, seq(5, 85, 10))
 all_states = state.name
 Nijk = get_Nijk(state_name = all_states, age_grouping = x_cdc, census_filename = census_filename)
