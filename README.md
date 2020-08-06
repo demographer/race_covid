@@ -1,8 +1,8 @@
 
-Replication code for "Improved measurement of racial/ethnic disparities in
-COVID-19 mortality in the United States"
+## Replication code for "Improved estimation of state-level racial/ethnic disparities in U.S. COVID-19 mortality"
 
-# Data
+
+### Data
 
 * Cleaned versions of "Provisional Death Counts for Coronavirus Disease
 (COVID-19)" originally downloaded from CDC(NCHS)
@@ -13,7 +13,7 @@ https://www.cdc.gov/nchs/nvss/vsrr/covid_weekly/
 
 * Selected original csv files from CDC. https://www.cdc.gov/nchs/nvss/vsrr/covid_weekly/
 
-# R code
+### R code
 
 * standardization_functions.R
 
@@ -21,9 +21,6 @@ https://www.cdc.gov/nchs/nvss/vsrr/covid_weekly/
 
 * (additional data cleaning scripts that don't need to be run for replication)
 
-# Figures
+### Figures
 
 Generated figures
-
-
-
